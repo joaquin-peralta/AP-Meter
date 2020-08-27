@@ -16,15 +16,15 @@ import com.example.medidordeparametrosacusticos.activities.MainActivity;
 import com.example.medidordeparametrosacusticos.activities.Results;
 import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
 import com.example.medidordeparametrosacusticos.databinding.FragmentFileViewerBinding;
-import com.example.medidordeparametrosacusticos.storage.InternalStorage;
+import com.example.medidordeparametrosacusticos.storage.InternalStorageManager;
 
 import java.util.ArrayList;
 
 public class FileViewerFragment extends Fragment implements FileViewerAdapter.OnItemListener {
     private FragmentFileViewerBinding binding;
     private FileViewerAdapter mAdapter;
-    private  ArrayList<String> mDataset = new ArrayList<>();
-    private static InternalStorage mStorage;
+    private  ArrayList<String> mFileSet = new ArrayList<>();
+    private static InternalStorageManager mStorage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,36 +38,30 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
         super.onViewCreated(view, savedInstanceState);
         binding.recyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
-
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-
         llm.setReverseLayout(true);
         llm.setStackFromEnd(true);
         binding.recyclerView.setLayoutManager(llm);
 
-        updateDataset();
-
-        if (mDataset.size() == 0)  {
+        mFileSet = getCurrentFileSet();
+        if (mFileSet.size() == 0)  {
             Toast.makeText(getContext(), "No hay mediciones", Toast.LENGTH_SHORT).show();
         }
-        mAdapter = new FileViewerAdapter(mDataset, this);
+        mAdapter = new FileViewerAdapter(mFileSet, this);
         binding.recyclerView.setAdapter(mAdapter);
-
-        mStorage = new InternalStorage(mDataset, mAdapter);
+        mStorage = new InternalStorageManager(mFileSet, mAdapter);
     }
 
-    public static InternalStorage getInternalStorage() {
-        return mStorage;
-    }
-
-    public void updateDataset() {
-        String[] fileList = getContext().fileList();
-        if (fileList.length != 0) {
-            for (int i = 0; i < fileList.length; i++) {
-                mDataset.add(fileList[i]);
-            }
+    private ArrayList<String> getCurrentFileSet() {
+        String[] arr = getContext().fileList();
+        for (int i = 0; i < arr.length ; i++) {
+            mFileSet.add(arr[i]);
         }
+        return mFileSet;
+    }
 
+    public static InternalStorageManager getCurrentStorage() {
+        return mStorage;
     }
 
     @Override
@@ -76,5 +70,11 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
         Intent intent = new Intent(getContext(), Results.class);
         intent.putExtra("Reverb times", measure);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

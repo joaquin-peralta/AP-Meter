@@ -18,4 +18,6 @@
     <string name="values">value</string>
     <string name="reverbTime">Tiempo de reverberación</string>
     <string name="sine_wave">sine wave</string>
+    <string name="action_settings">Acerca de</string>
+    <string name="action_delete">Delete</string>
 </resources>

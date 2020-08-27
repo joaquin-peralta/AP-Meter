@@ -7,9 +7,7 @@ import android.widget.Toast;
 
 import com.example.medidordeparametrosacusticos.activities.MainActivity;
 import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
-import com.example.medidordeparametrosacusticos.fragments.FileViewerFragment;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,12 +17,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class InternalStorage {
-    ArrayList<String> mDataset;
+public class InternalStorageManager {
+    ArrayList<String> mMeasures;
     FileViewerAdapter mAdapter;
 
-    public InternalStorage(ArrayList<String> mDataset, FileViewerAdapter mAdapter) {
-        this.mDataset = mDataset;
+    public InternalStorageManager(ArrayList<String> mMeasures, FileViewerAdapter mAdapter) {
+        this.mMeasures = mMeasures;
         this.mAdapter = mAdapter;
     }
 
@@ -43,11 +41,11 @@ public class InternalStorage {
         try {
             fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
             fos.write(text.getBytes());
-            mDataset.add(FILE_NAME);
-            mAdapter.notifyItemInserted(mDataset.size() - 1);
+            mMeasures.add(FILE_NAME);
+            mAdapter.notifyItemInserted(mMeasures.size() - 1);
 
             // update internal storage
-            String newMeasure = MainActivity.loadResult(context, FILE_NAME);
+            String newMeasure = load(context, FILE_NAME);
             MainActivity.getMeasures().add(newMeasure);
             showToast(context);
         } catch (IOException e) {
@@ -59,6 +57,37 @@ public class InternalStorage {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static String load(Context context, String FILE_NAME) {
+        FileInputStream fis = null;
+        String text = null;
+
+        try {
+            fis = context.openFileInput(FILE_NAME);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            text = sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return text;
     }
 
     private void showToast(final Context context) {

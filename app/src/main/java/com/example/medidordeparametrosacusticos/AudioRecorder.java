@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.medidordeparametrosacusticos.databinding.FragmentRecordBinding;
 import com.example.medidordeparametrosacusticos.fragments.RecordFragment;
 import com.example.medidordeparametrosacusticos.util.MyMaths;
 
@@ -23,7 +24,7 @@ public class AudioRecorder {
     private int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private int AUDIO_SOURCE = MediaRecorder.AudioSource.UNPROCESSED;
-    private int bufferSize;
+    private int bufferSize = 0;
 
     private volatile boolean isInitialized = false;
     private volatile boolean isRecording = true;
@@ -33,7 +34,14 @@ public class AudioRecorder {
 
     private Thread recordingThread = null;
     private ArrayList<Short> audioDataList = new ArrayList<Short>();
+
+    // UI
     private Handler recordingThreadHandler = new Handler((Looper.getMainLooper()));
+    private FragmentRecordBinding binding;
+
+    public AudioRecorder(FragmentRecordBinding binding){
+        this.binding = binding;
+    }
 
     public void startRecording() {
         bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
@@ -67,11 +75,11 @@ public class AudioRecorder {
                                 recordingThreadHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        RecordFragment.binding.progressBar.setVisibility(View.INVISIBLE);
-                                        RecordFragment.binding.btnRecord.setEnabled(true);
-                                        RecordFragment.binding.btnRecord.setBackgroundTintList(
+                                        binding.progressBar.setVisibility(View.INVISIBLE);
+                                        binding.btnRecord.setEnabled(true);
+                                        binding.btnRecord.setBackgroundTintList(
                                                 ColorStateList.valueOf(Color.parseColor("#49B675"))); // color verde
-                                        RecordFragment.binding.btnRecord.setImageResource(R.drawable.ic_mic_white);
+                                        binding.btnRecord.setImageResource(R.drawable.ic_mic_white);
 
                                     }
                                 });
@@ -137,10 +145,10 @@ public class AudioRecorder {
             recordingThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    RecordFragment.binding.btnRecord.setEnabled(false);
-                    RecordFragment.binding.btnRecord.setBackgroundTintList(
+                    binding.btnRecord.setEnabled(false);
+                    binding.btnRecord.setBackgroundTintList(
                             ColorStateList.valueOf(Color.parseColor("#808080")));
-                    RecordFragment.binding.progressBar.setVisibility(View.VISIBLE);
+                    binding.progressBar.setVisibility(View.VISIBLE);
                 }
             });
             return;
@@ -167,7 +175,7 @@ public class AudioRecorder {
                     recordingThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            RecordFragment.binding.progressBar.setProgress(progress);
+                            binding.progressBar.setProgress(progress);
                         }
                     });
                 }

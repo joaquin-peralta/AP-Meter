@@ -1,5 +1,7 @@
 package com.example.medidordeparametrosacusticos.util;
 
+import com.example.medidordeparametrosacusticos.OctaveBandFilter;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

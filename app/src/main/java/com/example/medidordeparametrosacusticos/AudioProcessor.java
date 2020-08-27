@@ -4,16 +4,14 @@ import android.os.Process;
 
 import com.example.medidordeparametrosacusticos.activities.MainActivity;
 import com.example.medidordeparametrosacusticos.fragments.FileViewerFragment;
-import com.example.medidordeparametrosacusticos.storage.InternalStorage;
-import com.example.medidordeparametrosacusticos.fragments.RecordFragment;
+import com.example.medidordeparametrosacusticos.storage.InternalStorageManager;
 import com.example.medidordeparametrosacusticos.util.MyMaths;
-import com.example.medidordeparametrosacusticos.util.OctaveBandFilter;
 
 public class AudioProcessor {
     private OctaveBandFilter octaveBandFilter = new OctaveBandFilter();
     private Thread processingThread = null;
     private double[][] reverbTimes;
-    private InternalStorage storage;
+    private InternalStorageManager mStorage;
 
     public void process(final double[] impulse) {
        processingThread = new Thread(new Runnable() {
@@ -42,8 +40,8 @@ public class AudioProcessor {
                    reverbTimes[i][3] = MyMaths.calculateRT(slope30dB);
                }
 
-               storage = FileViewerFragment.getInternalStorage();
-               storage.save(reverbTimes, MainActivity.getAppContext());
+               mStorage = FileViewerFragment.getCurrentStorage();
+               mStorage.save(reverbTimes, MainActivity.getAppContext());
            }
        });
        processingThread.start();

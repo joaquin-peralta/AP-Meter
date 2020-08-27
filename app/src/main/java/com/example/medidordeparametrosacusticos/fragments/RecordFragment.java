@@ -18,8 +18,8 @@ import com.example.medidordeparametrosacusticos.R;
 import com.example.medidordeparametrosacusticos.databinding.FragmentRecordBinding;
 
 public class RecordFragment extends Fragment {
-    public static FragmentRecordBinding binding;
-    private AudioRecorder mRecorder = new AudioRecorder();
+    FragmentRecordBinding binding;
+    private AudioRecorder mRecorder = null;
 
 
     @Nullable
@@ -34,6 +34,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mRecorder = new AudioRecorder(binding);
         binding.btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,7 +52,7 @@ public class RecordFragment extends Fragment {
             binding.btnRecord.setImageResource(R.drawable.ic_mic_off);
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             Toast.makeText(getContext(), "Esperando impulso...", Toast.LENGTH_SHORT).show();
-            mRecorder = new AudioRecorder();
+            mRecorder = new AudioRecorder(binding);
             mRecorder.startRecording();
 
         } else {
