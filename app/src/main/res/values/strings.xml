@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Medidor de parametros acusticos</string>
+    <string name="medicion">Medicion</string>
+    <string name="Hertz">Hz</string>
+    <string name="EDT">EDT [s]</string>
+    <string name="TR10">TR10 [s]</string>
+    <string name="TR20">TR20 [s]</string>
+    <string name="TR30">TR30 [s]</string>
+    <string name="m32Hz">32</string>
+    <string name="m63Hz">63</string>
+    <string name="m125Hz">125</string>
+    <string name="m250Hz">250</string>
+    <string name="m500Hz">500</string>
+    <string name="m1000Hz">1000</string>
+    <string name="m2000Hz">2000</string>
+    <string name="m4000Hz">4000</string>
+    <string name="m8000Hz">8000</string>
+    <string name="values">value</string>
+    <string name="reverbTime">Tiempo de reverberación</string>
+    <string name="sine_wave">sine wave</string>
+</resources>
