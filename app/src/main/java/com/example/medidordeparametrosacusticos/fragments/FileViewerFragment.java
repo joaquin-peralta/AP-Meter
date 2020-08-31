@@ -73,6 +73,13 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
     }
 
     @Override
+    public void onDeleteClick(int position) {
+        mStorage = getCurrentStorage();
+        mStorage.delete(position, MainActivity.getAppContext());
+        Toast.makeText(getContext(), "Medición eliminada", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;

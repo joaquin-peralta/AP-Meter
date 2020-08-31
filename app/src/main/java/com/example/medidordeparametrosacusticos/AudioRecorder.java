@@ -76,14 +76,9 @@ public class AudioRecorder {
                                     @Override
                                     public void run() {
                                         binding.progressBar.setVisibility(View.INVISIBLE);
-                                        binding.btnRecord.setEnabled(true);
-                                        binding.btnRecord.setBackgroundTintList(
-                                                ColorStateList.valueOf(Color.parseColor("#49B675"))); // color verde
-                                        binding.btnRecord.setImageResource(R.drawable.ic_mic_white);
-
                                     }
                                 });
-                                new AudioProcessor().process(getAudioData());
+                                new AudioProcessor(binding).process(getAudioData());
                             }
                         }
 

@@ -9,17 +9,23 @@ import com.example.medidordeparametrosacusticos.activities.MainActivity;
 import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class InternalStorageManager {
     ArrayList<String> mMeasures;
     FileViewerAdapter mAdapter;
+
+    Date today;
+    SimpleDateFormat formatter;
 
     public InternalStorageManager(ArrayList<String> mMeasures, FileViewerAdapter mAdapter) {
         this.mMeasures = mMeasures;
@@ -27,8 +33,9 @@ public class InternalStorageManager {
     }
 
     public void save(final double[][] data, final Context context) {
-        Date currentDate = new Date(System.currentTimeMillis());
-        String FILE_NAME = currentDate.toString();
+        formatter = new SimpleDateFormat("EEE d MMM yy h:mm a", Locale.US);
+        today = new Date();
+        String FILE_NAME = formatter.format(today);
         String text = "";
         FileOutputStream fos = null;
 
@@ -88,6 +95,13 @@ public class InternalStorageManager {
             }
         }
         return text;
+    }
+
+    public void delete(int position, Context context) {
+        String FILE_NAME = context.fileList()[position];
+        context.deleteFile(FILE_NAME);
+        mMeasures.remove(position);
+        mAdapter.notifyItemRemoved(position);
     }
 
     private void showToast(final Context context) {

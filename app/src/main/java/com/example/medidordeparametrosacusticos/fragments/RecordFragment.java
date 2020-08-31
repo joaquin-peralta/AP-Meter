@@ -43,6 +43,7 @@ public class RecordFragment extends Fragment {
         });
         binding.progressBar.setVisibility(View.INVISIBLE);
         binding.progressBar.setMax(141000);
+        binding.progressCircularBar.setVisibility(View.INVISIBLE);
     }
 
     public void startEvent() {

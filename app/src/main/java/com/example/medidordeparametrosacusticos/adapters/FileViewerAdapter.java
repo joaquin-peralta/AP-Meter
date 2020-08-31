@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,23 +42,38 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Fi
 
     public class FileViewerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textView;
+        ImageView deleteImage;
         OnItemListener onItemListener;
 
-        public FileViewerViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
+        public FileViewerViewHolder(@NonNull View itemView, final OnItemListener onItemListener) {
             super(itemView);
             textView = itemView.findViewById(R.id.file_name_text);
+            deleteImage = itemView.findViewById(R.id.image_delete);
             this.onItemListener = onItemListener;
 
             itemView.setOnClickListener(this);
+
+            deleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        onItemListener.onDeleteClick(position);
+                    }
+                }
+            });
+
         }
 
         @Override
         public void onClick(View v) {
             onItemListener.onItemClick(getAdapterPosition());
         }
+
     }
 
     public interface OnItemListener {
         void onItemClick(int position);
+        void onDeleteClick(int position);
     }
 }
