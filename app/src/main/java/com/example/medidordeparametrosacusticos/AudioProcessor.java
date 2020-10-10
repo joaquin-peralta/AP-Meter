@@ -39,20 +39,6 @@ public class AudioProcessor {
                    double[] decayCurve = MyMaths.schroederIntegration(filteredImpulses[i]);
                    double[] normalizeCurve = MyMaths.convertToDecibel(decayCurve);
 
-                   double[][] matrixEDT = MyMaths.getDecreaseRange(normalizeCurve, "EDT");
-                   double[][] matrix10dB = MyMaths.getDecreaseRange(normalizeCurve, "10dB");
-                   double[][] matrix20dB = MyMaths.getDecreaseRange(normalizeCurve, "20dB");
-                   double[][] matrix30dB = MyMaths.getDecreaseRange(normalizeCurve, "30dB");
-
-                   double slopeEDT = MyMaths.polyfit(matrixEDT != null ? matrixEDT : new double[0][0]);
-                   double slope10dB = MyMaths.polyfit(matrix10dB != null ? matrix10dB : new double[0][0]);
-                   double slope20dB = MyMaths.polyfit(matrix20dB != null ? matrix20dB : new double[0][0]);
-                   double slope30dB = MyMaths.polyfit(matrix30dB != null ? matrix30dB : new double[0][0]);
-
-                   reverbTimes[i][0] = MyMaths.calculateRT(slopeEDT);
-                   reverbTimes[i][1] = MyMaths.calculateRT(slope10dB);
-                   reverbTimes[i][2] = MyMaths.calculateRT(slope20dB);
-                   reverbTimes[i][3] = MyMaths.calculateRT(slope30dB);
                }
 
                mStorage = FileViewerFragment.getCurrentStorage();

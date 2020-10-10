@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static com.example.medidordeparametrosacusticos.util.OctaveBandFilterTest.generateImpulse;
 
 public class MyMathsTest {
@@ -21,11 +23,14 @@ public class MyMathsTest {
 
     @Test
     public void cumtrapzTest() {
-        double[] buffer = generateImpulse(50000);
+        double[] buffer = new double[]{1, 4, 9, 16, 25};
         double[] cumulation = MyMaths.cumtrapz(buffer);
         Assert.assertTrue("impulse[impulse.length] debería ser igual a cero.",cumulation[0] == 0);
         for (int i = 1; i < cumulation.length-1; i++) {
             Assert.assertTrue("Los valores cumulation[i] no crecen como deberían.", cumulation[i] >= cumulation[i-1]);
+        }
+        for (double d:cumulation) {
+            System.out.println(d);
         }
     }
 
@@ -43,13 +48,6 @@ public class MyMathsTest {
         double[] buffer = new double[]{1,2,3,4,5};
         double rms = MyMaths.calculateRMS(buffer);
         Assert.assertTrue(Math.round(rms) == 3);
-    }
-
-    @Test
-    public void polyfitTest() {
-        double[][] matrix = new double[][]{{1,2,3,4,5,6,7,8,9,10}, {250,189,174,132,100,96,85,76,62,32}};
-        double slope = MyMaths.polyfit(matrix);
-        System.out.println(slope);
     }
 
     @Test
@@ -90,7 +88,42 @@ public class MyMathsTest {
     }
 
     @Test
-    public void getDecreaseRangeTest() {
-        new AudioProcessor().process(impulse);
+    public void reverseTest() {
+        double[] array = new double[]{1, 2, 3, 4, 5};
+        MyTools.reverse(array);
+        for (double d:array) {
+            System.out.println(d);
+        }
+    }
+
+    @Test
+    public void generateMatrixTest() {
+        double[] mImpulse = new double[]{0.0, -3.0, -5.0, -6.3, -7.0, -3.2, -9.0, -11.0};
+        ArrayList<ArrayList<Double>> matrix = new ArrayList<ArrayList<Double>>();
+        double[] curve = MyMaths.convertToDecibel(MyMaths.schroederIntegration(mImpulse));
+        matrix = MyMaths.generateMatrix(curve, "EDT");
+
+        int x = MyMaths.getVectorX(matrix).length;
+        int y = MyMaths.getVectorY(matrix).length;
+
+    }
+
+    @Test
+    public void polyfitTest() {
+        double[] mImpulse = new double[]{0.0, -3.0, -5.0, -6.3, -7.0, -3.2, -9.0, -11.0};
+        ArrayList<ArrayList<Double>> matrix = new ArrayList<ArrayList<Double>>();
+        double[] curve = MyMaths.convertToDecibel(MyMaths.schroederIntegration(mImpulse));
+        matrix = MyMaths.generateMatrix(curve, "EDT");
+
+        MyMaths.polyfit(MyMaths.getVectorX(matrix), MyMaths.getVectorY(matrix));
+    }
+
+    @Test
+    public void polyfitTest2() {
+        double[] x = new double[]{0, 1, 2, 3, 4, 5};
+        double[] y = new double[]{0, 1, 2, 3, 4, 5};
+
+        MyMaths.polyfit(x, y);
+
     }
 }

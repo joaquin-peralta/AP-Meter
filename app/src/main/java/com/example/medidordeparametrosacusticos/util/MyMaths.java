@@ -1,37 +1,18 @@
 package com.example.medidordeparametrosacusticos.util;
 
 import java.util.ArrayList;
+import org.apache.commons.math3.*;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import static com.example.medidordeparametrosacusticos.util.MyTools.reverse;
 
 public class MyMaths {
     private static double SAMPLE_RATE = 44100.0;
+    private static ArrayList<ArrayList<Double>> matrix = new ArrayList<ArrayList<Double>>(2);
 
     public static double calculateRT(double slope) {
         return Math.floor((-60.0/slope)*1000) / 1000;
-    }
-
-    public static double polyfit(double[][] matrix) {
-        double t_Mean = 0;
-        double Ls_Mean = 0;
-        for (int i = 0; i < matrix[0].length; i++) {
-            t_Mean += matrix[0][i];
-            Ls_Mean += matrix[1][i];
-        }
-        t_Mean = t_Mean / matrix[0].length;
-        Ls_Mean = Ls_Mean / matrix[0].length;
-
-        double tn = 0;
-        double Ls = 0;
-        double numerator = 0;
-        double denominator = 0;
-        for (int i = 0; i < matrix[0].length; i++) {
-            tn = matrix[0][i];
-            Ls = matrix[1][i];
-            numerator += ((tn - t_Mean) * (Ls - Ls_Mean));
-            denominator += ((tn - t_Mean) * (tn - t_Mean));
-        }
-        return numerator / denominator; // slope
     }
 
     public static double[] schroederIntegration(double[] impulse) {
@@ -72,11 +53,11 @@ public class MyMaths {
         return normalizeCurve;
     }
 
-    public static double[][] getDecreaseRange(double[] normalizeCurve, String range) {
+    public static ArrayList<ArrayList<Double>> generateMatrix(double[] normalizeCurve, String range) {
         double max = MyTools.maxValue(normalizeCurve);
         double min = MyTools.minValue(normalizeCurve);
         ArrayList<Double> levelList = new ArrayList<Double>();
-        ArrayList<Integer> sampleList = new ArrayList<Integer>();
+        ArrayList<Double> sampleList = new ArrayList<Double>();
 
         if (range == "EDT") {
             if (max - min <= 10.0) {return null;}
@@ -85,7 +66,7 @@ public class MyMaths {
             for (int i = 0; i < normalizeCurve.length; i++) {
                 if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
                     levelList.add(normalizeCurve[i]);
-                    sampleList.add(i);
+                    sampleList.add((double) i);
                 }
             }
 
@@ -96,7 +77,7 @@ public class MyMaths {
             for (int i = 0; i < normalizeCurve.length; i++) {
                 if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
                     levelList.add(normalizeCurve[i]);
-                    sampleList.add(i);
+                    sampleList.add((double) i);
                 }
             }
 
@@ -107,7 +88,7 @@ public class MyMaths {
             for (int i = 0; i < normalizeCurve.length; i++) {
                 if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
                     levelList.add(normalizeCurve[i]);
-                    sampleList.add(i);
+                    sampleList.add((double) i);
                 }
             }
 
@@ -118,17 +99,51 @@ public class MyMaths {
             for (int i = 0; i < normalizeCurve.length; i++) {
                 if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
                     levelList.add(normalizeCurve[i]);
-                    sampleList.add(i);
+                    sampleList.add((double) i);
                 }
             }
         }
 
-        double[][] matrix = new double[2][sampleList.size()];
-        for (int i = 0; i < sampleList.size(); i++) {
-            matrix[0][i] = sampleList.get(i) / 44100d;
-            matrix[1][i] = levelList.get(i);
+        ArrayList<Double> vectorX = new ArrayList<Double>();
+        ArrayList<Double> vectorY = new ArrayList<Double>();
+
+        for (int i = 0; i < sampleList.size() ; i++) {
+            vectorX.add(sampleList.get(i) / 44100d);
+            vectorY.add(levelList.get(i));
         }
+        matrix.add(vectorX);
+        matrix.add(vectorY);
+
         return matrix;
+    }
+
+    public static double[] getVectorX(ArrayList<ArrayList<Double>> matrix) {
+        double[] vectorX = new double[matrix.get(0).size()];
+        for (int i = 0; i < matrix.get(0).size() ; i++) {
+            vectorX[i] = matrix.get(0).get(i);
+        }
+        return vectorX;
+    }
+
+    public static double[] getVectorY(ArrayList<ArrayList<Double>> matrix) {
+        double[] vectorY = new double[matrix.get(1).size()];
+        for (int i = 0; i < matrix.get(1).size() ; i++) {
+            vectorY[i] = matrix.get(1).get(i);
+        }
+        return vectorY;
+    }
+
+    public static double[] polyfit(double[] x, double[] y) {
+        final WeightedObservedPoints obs = new WeightedObservedPoints();
+        for (int i = 0; i < x.length; i++) {
+            obs.add(x[i], y[i]);
+        }
+
+        final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(1);
+        final double[] coeff = fitter.fit(obs.toList());
+
+        return coeff; /* coeff[0] = ordenada
+                         coeff[1] = pendiente */
     }
 }
 
