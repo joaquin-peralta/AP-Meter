@@ -24,6 +24,9 @@ public class Results extends AppCompatActivity {
         setContentView(view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Resultados");
 
         Intent intent = getIntent();
         String measure = intent.getStringExtra("Reverb times");
@@ -73,5 +76,11 @@ public class Results extends AppCompatActivity {
         binding.m8000HzTR10.setText(array[33]);
         binding.m8000HzTR20.setText(array[34]);
         binding.m8000HzTR30.setText(array[35]);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

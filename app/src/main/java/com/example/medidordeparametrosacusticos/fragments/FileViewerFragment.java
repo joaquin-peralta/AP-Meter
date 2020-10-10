@@ -1,5 +1,7 @@
 package com.example.medidordeparametrosacusticos.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -73,10 +75,27 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
     }
 
     @Override
-    public void onDeleteClick(int position) {
-        mStorage = getCurrentStorage();
-        mStorage.delete(position, MainActivity.getAppContext());
-        Toast.makeText(getContext(), "Medición eliminada", Toast.LENGTH_SHORT).show();
+    public void onDeleteClick(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("¿Eliminar medición?");
+        builder.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mStorage = getCurrentStorage();
+                mStorage.delete(position, MainActivity.getAppContext());
+                Toast.makeText(getContext(), "Medición eliminada", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // ...
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     @Override
