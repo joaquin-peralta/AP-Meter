@@ -18,8 +18,8 @@ import com.example.medidordeparametrosacusticos.R;
 import com.example.medidordeparametrosacusticos.databinding.FragmentRecordBinding;
 
 public class RecordFragment extends Fragment {
-    FragmentRecordBinding binding;
-    private AudioRecorder mRecorder = null;
+    private FragmentRecordBinding binding;
+    private AudioRecorder mRecorder = new AudioRecorder();
 
 
     @Nullable
@@ -34,26 +34,21 @@ public class RecordFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecorder = new AudioRecorder(binding);
         binding.btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEvent();
+                triggerEvent();
             }
         });
-        binding.progressBar.setVisibility(View.INVISIBLE);
-        binding.progressBar.setMax(141000);
-        binding.progressCircularBar.setVisibility(View.INVISIBLE);
     }
 
-    public void startEvent() {
+    public void triggerEvent() {
         if (!mRecorder.hasInitialized()) {
             binding.btnRecord.setBackgroundTintList(ColorStateList.valueOf(
                     Color.parseColor("#E71837"))); // color rojo
             binding.btnRecord.setImageResource(R.drawable.ic_mic_off);
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             Toast.makeText(getContext(), "Esperando impulso...", Toast.LENGTH_SHORT).show();
-            mRecorder = new AudioRecorder(binding);
             mRecorder.startRecording();
 
         } else {

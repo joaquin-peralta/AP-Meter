@@ -26,22 +26,13 @@ public class AudioRecorder {
     private int AUDIO_SOURCE = MediaRecorder.AudioSource.UNPROCESSED;
     private int bufferSize = 0;
 
-    private volatile boolean isInitialized = false;
-    private volatile boolean isRecording = true;
-    private boolean isLoud = false;
+    private boolean isRecording = false;
+    private boolean isLoudEnough = false;
     private boolean isChecked = false;
-    private double noiseFloor = 10.0;
+    private double noiseFloor = 500.0;
 
     private Thread recordingThread = null;
     private ArrayList<Short> audioDataList = new ArrayList<Short>();
-
-    // UI
-    private Handler recordingThreadHandler = new Handler((Looper.getMainLooper()));
-    private FragmentRecordBinding binding;
-
-    public AudioRecorder(FragmentRecordBinding binding){
-        this.binding = binding;
-    }
 
     public void startRecording() {
         bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
@@ -51,7 +42,6 @@ public class AudioRecorder {
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
                 recorder.startRecording();
-                isInitialized = true;
                 int bytesCounter = 0;
                 short[] audioData = new short[bufferSize/2];
 
@@ -60,25 +50,16 @@ public class AudioRecorder {
 
                     if (readSize > 0) {
                         checkLevel(audioData);
-                        if (isLoud) {
+                        if (isLoudEnough) {
                             bytesCounter += readSize;
                             for (int i = 0; i < audioData.length; i++) {
                                 audioDataList.add(audioData[i]);
                             }
-                            increaseProgressBar(bytesCounter);
                             if (bytesCounter > 141000) { // duración del proceso: 3 segundos ~
                                 recorder.stop();
                                 recorder.release();
                                 recorder = null;
                                 isRecording = false;
-                                isInitialized = false;
-                                recordingThreadHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        binding.progressBar.setVisibility(View.INVISIBLE);
-                                    }
-                                });
-                                new AudioProcessor(binding).process(getAudioData());
                             }
                         }
 
@@ -95,11 +76,6 @@ public class AudioRecorder {
                         break;
 
                     }
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
                 }
             }
         }, "AudioRecorder Thread");
@@ -109,7 +85,6 @@ public class AudioRecorder {
     public void stopRecording() {
         if (isRecording) {
             isRecording = false;
-            isInitialized = false;
             try {
                 recordingThread.join();
             } catch (InterruptedException e) {
@@ -119,34 +94,19 @@ public class AudioRecorder {
             recorder.release();
             recorder = null;
             recordingThread = null;
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     private void checkLevel(short[] audioData) {
-        if (isChecked == true) {return;}
+        if (isChecked) {return;}
         double[] doubleData = new double[audioData.length];
         for (int i = 0; i < audioData.length ; i++) {
             doubleData[i] = audioData[i];
         }
         double rms = MyMaths.calculateRMS(doubleData);
-        if (rms > noiseFloor * 50.0) {
-            isLoud = true;
+        if (rms > noiseFloor) {
+            isLoudEnough = true;
             isChecked = true;
-            recordingThreadHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    binding.btnRecord.setEnabled(false);
-                    binding.btnRecord.setBackgroundTintList(
-                            ColorStateList.valueOf(Color.parseColor("#808080")));
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                }
-            });
-            return;
         }
     }
 
@@ -159,22 +119,6 @@ public class AudioRecorder {
     }
 
     public boolean hasInitialized() {
-        return  isInitialized;
-    }
-
-    private void increaseProgressBar(final int progress) {
-        Thread progressBarThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_LOWEST);
-                    recordingThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            binding.progressBar.setProgress(progress);
-                        }
-                    });
-                }
-            });
-        progressBarThread.start();
+        return isRecording;
     }
 }
