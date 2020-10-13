@@ -10,11 +10,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
 import com.example.medidordeparametrosacusticos.databinding.FragmentFileViewerBinding;
 import com.example.medidordeparametrosacusticos.storage.StorageManager;
 
 public class FileViewerFragment extends Fragment {
     private FragmentFileViewerBinding binding;
+    private FileViewerAdapter mAdapter;
     private StorageManager storageManager = new StorageManager(getContext());
 
     @Override
@@ -33,6 +35,7 @@ public class FileViewerFragment extends Fragment {
         llm.setReverseLayout(true);
         llm.setStackFromEnd(true);
         binding.recyclerView.setLayoutManager(llm);
+        mAdapter = storageManager.getAdapter();
         binding.recyclerView.setAdapter(storageManager.getAdapter());
     }
 

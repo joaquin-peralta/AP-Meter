@@ -27,73 +27,59 @@ public class AudioRecorder {
     private int bufferSize = 0;
 
     private boolean isRecording = false;
-    private boolean isLoudEnough = false;
+    private boolean isLoudEnough = true;
     private boolean isChecked = false;
-    private double noiseFloor = 500.0;
+    private double noiseFloor = 10.0;
 
-    private Thread recordingThread = null;
     private ArrayList<Short> audioDataList = new ArrayList<Short>();
 
     public void startRecording() {
         bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
         recorder = new AudioRecord(AUDIO_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, bufferSize);
-        recordingThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
-                recorder.startRecording();
-                int bytesCounter = 0;
-                short[] audioData = new short[bufferSize/2];
+        recorder.startRecording();
+        int bytesCounter = 0;
+        short[] audioData = new short[bufferSize/2];
+        isRecording = true;
 
-                while (isRecording) {
-                    int readSize = recorder.read(audioData, 0, bufferSize/2, AudioRecord.READ_BLOCKING);
+        while (isRecording) {
+            int readSize = recorder.read(audioData, 0, bufferSize/2, AudioRecord.READ_BLOCKING);
 
-                    if (readSize > 0) {
-                        checkLevel(audioData);
-                        if (isLoudEnough) {
-                            bytesCounter += readSize;
-                            for (int i = 0; i < audioData.length; i++) {
-                                audioDataList.add(audioData[i]);
-                            }
-                            if (bytesCounter > 141000) { // duración del proceso: 3 segundos ~
-                                recorder.stop();
-                                recorder.release();
-                                recorder = null;
-                                isRecording = false;
-                            }
-                        }
-
-                    } else if (readSize == AudioRecord.ERROR_INVALID_OPERATION) {
-                        Log.e("Recording", "Invalid operation error");
-                        break;
-
-                    } else if (readSize == AudioRecord.ERROR_BAD_VALUE) {
-                        Log.e("Recording", "Bad value error");
-                        break;
-
-                    } else if (readSize == AudioRecord.ERROR) {
-                        Log.e("Recording", "Unknown error");
-                        break;
-
+            if (readSize > 0) {
+                checkLevel(audioData);
+                if (isLoudEnough) {
+                    bytesCounter += readSize;
+                    for (int i = 0; i < audioData.length; i++) {
+                        audioDataList.add(audioData[i]);
+                    }
+                    if (bytesCounter > 141000) { // duración del proceso: 3 segundos ~
+                        recorder.stop();
+                        recorder.release();
+                        recorder = null;
+                        isRecording = false;
                     }
                 }
+
+            } else if (readSize == AudioRecord.ERROR_INVALID_OPERATION) {
+                Log.e("Recording", "Invalid operation error");
+                break;
+
+            } else if (readSize == AudioRecord.ERROR_BAD_VALUE) {
+                Log.e("Recording", "Bad value error");
+                break;
+
+            } else if (readSize == AudioRecord.ERROR) {
+                Log.e("Recording", "Unknown error");
+                break;
             }
-        }, "AudioRecorder Thread");
-        recordingThread.start();
+        }
     }
 
     public void stopRecording() {
         if (isRecording) {
             isRecording = false;
-            try {
-                recordingThread.join();
-            } catch (InterruptedException e) {
-                Log.e("Stop recording", "Stop thread error");
-            }
             recorder.stop();
             recorder.release();
             recorder = null;
-            recordingThread = null;
         }
     }
 
@@ -118,7 +104,7 @@ public class AudioRecorder {
         return audioData;
     }
 
-    public boolean hasInitialized() {
+    public boolean isRecording() {
         return isRecording;
     }
 }

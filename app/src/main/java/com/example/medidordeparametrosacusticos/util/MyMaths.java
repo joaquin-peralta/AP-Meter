@@ -11,10 +11,6 @@ public class MyMaths {
     private static double SAMPLE_RATE = 44100.0;
     private static ArrayList<ArrayList<Double>> matrix = new ArrayList<ArrayList<Double>>(2);
 
-    public static double calculateRT(double slope) {
-        return Math.floor((-60.0/slope)*1000) / 1000;
-    }
-
     public static double[] schroederIntegration(double[] impulse) {
         for (int i = 0; i < impulse.length; i++) {
             impulse[i] = impulse[i] * impulse[i];
@@ -145,5 +141,10 @@ public class MyMaths {
         return coeff; /* coeff[0] = ordenada
                          coeff[1] = pendiente */
     }
+
+    public static double calculateRT(double slope) {
+        return Math.floor((-60.0/slope)*1000) / 1000;
+    }
+
 }
 

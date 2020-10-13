@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.example.medidordeparametrosacusticos.R;
 import com.example.medidordeparametrosacusticos.adapters.MyTabAdapter;
 import com.example.medidordeparametrosacusticos.databinding.ActivityMainBinding;
 import com.example.medidordeparametrosacusticos.storage.StorageManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-    private StorageManager storageManager = new StorageManager(getApplicationContext());
+    private StorageManager storageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         );
         tabLayoutMediator.attach();
 
+        storageManager = new StorageManager(getApplicationContext());
         storageManager.loadCurrentMeasures();
         checkPermission();
     }

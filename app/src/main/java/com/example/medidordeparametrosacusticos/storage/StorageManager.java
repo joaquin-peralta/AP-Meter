@@ -109,7 +109,6 @@ public class StorageManager implements FileViewerAdapter.OnItemListener {
 
             // update internal storage
             loadFile(fileName);
-            Toast.makeText(context, "Medición guardada", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
