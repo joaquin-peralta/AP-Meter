@@ -1,13 +1,11 @@
 package com.example.medidordeparametrosacusticos.storage;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.widget.Toast;
 
-import com.example.medidordeparametrosacusticos.activities.Results;
+import androidx.fragment.app.Fragment;
+
 import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
+import com.example.medidordeparametrosacusticos.fragments.FileViewerFragment;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -21,11 +19,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class StorageManager implements FileViewerAdapter.OnItemListener {
+public class StorageManager {
     private WeakReference<Context> contextWeakReference;
     private ArrayList<String> mResults = new ArrayList<String>();
     private ArrayList<String> mMeasuresList = new ArrayList<String>();
-    private FileViewerAdapter mAdapter = new FileViewerAdapter(mMeasuresList, this);
 
     public StorageManager(Context context) {
         contextWeakReference = new WeakReference<Context>(context);
@@ -105,7 +102,6 @@ public class StorageManager implements FileViewerAdapter.OnItemListener {
             fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             fos.write(text.getBytes());
             mMeasuresList.add(fileName);
-            mAdapter.notifyItemInserted(mMeasuresList.size() - 1);
 
             // update internal storage
             loadFile(fileName);
@@ -128,45 +124,6 @@ public class StorageManager implements FileViewerAdapter.OnItemListener {
         String fileName = context.fileList()[position];
         context.deleteFile(fileName);
         mMeasuresList.remove(position);
-        mAdapter.notifyItemRemoved(position);
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        Context context = contextWeakReference.get();
-        if (context == null) {
-            return;
-        }
-        String measure = getResults().get(position);
-        Intent intent = new Intent(context, Results.class);
-        intent.putExtra("Reverb times", measure);
-        context.startActivity(intent);
-    }
-
-    @Override
-    public void onDeleteClick(final int position) {
-        final Context context = contextWeakReference.get();
-        if (context == null) {
-            return;
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("¿Eliminar medición?");
-        builder.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                delete(position);
-                Toast.makeText(context, "Medición eliminada", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // ...
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     public ArrayList<String> getResults() {
@@ -177,7 +134,4 @@ public class StorageManager implements FileViewerAdapter.OnItemListener {
         return mMeasuresList;
     }
 
-    public FileViewerAdapter getAdapter() {
-        return mAdapter;
-    }
 }

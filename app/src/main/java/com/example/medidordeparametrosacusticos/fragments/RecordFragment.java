@@ -109,7 +109,10 @@ public class RecordFragment extends Fragment {
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
-
+            FragmentRecordBinding binding = bindingWeakReference.get();
+            binding.btnRecord.setBackgroundTintList(ColorStateList.valueOf(
+                    Color.parseColor("#AAAAAA")));
+            binding.btnRecord.setEnabled(false);
         }
 
         @Override
