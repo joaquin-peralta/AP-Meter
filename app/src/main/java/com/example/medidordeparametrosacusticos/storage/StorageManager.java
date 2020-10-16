@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -131,6 +132,9 @@ public class StorageManager {
     }
 
     public ArrayList<String> getMeasuresList() {
+        Context context = contextWeakReference.get();
+        String[] fileList = context.fileList();
+        mMeasuresList.addAll(Arrays.asList(fileList));
         return mMeasuresList;
     }
 

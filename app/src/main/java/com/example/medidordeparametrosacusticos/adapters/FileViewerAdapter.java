@@ -17,8 +17,8 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Fi
     ArrayList<String> mDataset;
     private OnItemListener mOnItemListener;
 
-    public FileViewerAdapter(ArrayList<String> mDataset, OnItemListener onItemListener) {
-        this.mDataset = mDataset;
+    public FileViewerAdapter(ArrayList<String> dataset, OnItemListener onItemListener) {
+        this.mDataset = dataset;
         this.mOnItemListener = onItemListener;
     }
 

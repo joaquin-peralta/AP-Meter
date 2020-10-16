@@ -1,9 +1,7 @@
 package com.example.medidordeparametrosacusticos.fragments;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,17 +13,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.medidordeparametrosacusticos.activities.MainActivity;
-import com.example.medidordeparametrosacusticos.activities.Results;
 import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
 import com.example.medidordeparametrosacusticos.databinding.FragmentFileViewerBinding;
-import com.example.medidordeparametrosacusticos.storage.StorageManager;
+
+import java.util.ArrayList;
 
 public class FileViewerFragment extends Fragment implements FileViewerAdapter.OnItemListener {
     private FragmentFileViewerBinding binding;
     private FileViewerAdapter mAdapter;
-    private StorageManager storageManager = new StorageManager(getContext());
-    private int itemsInserted = 0;
+    private ArrayList<String> mMeasuresList;
+
+    public interface FileViewerFragmentListener {
+        void onInputSent(ArrayList<String> arrayList);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,9 +48,9 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
         llm.setReverseLayout(true);
         llm.setStackFromEnd(true);
         binding.recyclerView.setLayoutManager(llm);
-        mAdapter = new FileViewerAdapter(storageManager.getMeasuresList(), this);
+        getMeasuresList();
+        mAdapter = new FileViewerAdapter(mMeasuresList, this);
         binding.recyclerView.setAdapter(mAdapter);
-        checkIfNewItemsWereInserted();
     }
 
     @Override
@@ -56,10 +61,10 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
 
     @Override
     public void onItemClick(int position) {
-        String measure = storageManager.getResults().get(position);
+        /*String measure = getResults().get(position);
         Intent intent = new Intent(getContext(), Results.class);
         intent.putExtra("Reverb times", measure);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     @Override
@@ -69,9 +74,9 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
         builder.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                storageManager.delete(position);
+                String fileName = getContext().fileList()[position];
+                getContext().deleteFile(fileName);
                 mAdapter.notifyItemRemoved(position);
-                itemsInserted = storageManager.getMeasuresList().size();
                 Toast.makeText(getContext(), "Medición eliminada", Toast.LENGTH_SHORT).show();
             }
         });
@@ -86,10 +91,7 @@ public class FileViewerFragment extends Fragment implements FileViewerAdapter.On
         dialog.show();
     }
 
-    private void checkIfNewItemsWereInserted() {
-        if (itemsInserted == storageManager.getMeasuresList().size()) {
-            return;
-        }
-        mAdapter.notifyItemInserted(storageManager.getMeasuresList().size() - 1);
+    private void getMeasuresList() {
+
     }
 }
