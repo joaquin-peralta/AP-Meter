@@ -1,11 +1,7 @@
-package com.example.medidordeparametrosacusticos;
+package com.example.medidordeparametrosacusticos.models;
 
-import android.content.Context;
-
-import com.example.medidordeparametrosacusticos.storage.StorageManager;
 import com.example.medidordeparametrosacusticos.util.MyMaths;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class AudioProcessor {
@@ -13,17 +9,8 @@ public class AudioProcessor {
     private double[][] reverbTimes;
     private double[] coeff = new double[2];
     ArrayList<ArrayList<Double>> matrix = new ArrayList<ArrayList<Double>>(2);
-    private WeakReference<Context> contextWeakReference;
-
-    public AudioProcessor(Context context) {
-        contextWeakReference = new WeakReference<Context>(context);
-    }
 
     public void process(final double[] impulse) {
-        Context context = contextWeakReference.get();
-        if (context == null) {
-            return;
-        }
 
         reverbTimes = new double[9][4];
         double[][] filteredImpulses = octaveBandFilter.applyTo(impulse);
@@ -51,7 +38,9 @@ public class AudioProcessor {
             reverbTimes[i][3] = MyMaths.calculateRT(coeff[1]);
             matrix.clear();
         }
+    }
 
-        new StorageManager(context).save(reverbTimes);
+    public double[][] getReverbTimes() {
+        return reverbTimes;
     }
 }

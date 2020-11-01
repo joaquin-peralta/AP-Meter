@@ -15,18 +15,16 @@ import java.util.ArrayList;
 
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.FileViewerViewHolder> {
     ArrayList<String> mDataset;
-    private OnItemListener mOnItemListener;
 
-    public FileViewerAdapter(ArrayList<String> dataset, OnItemListener onItemListener) {
+    public FileViewerAdapter(ArrayList<String> dataset) {
         this.mDataset = dataset;
-        this.mOnItemListener = onItemListener;
     }
 
     @NonNull
     @Override
     public FileViewerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_view, parent, false);
-        return new FileViewerViewHolder(itemView, mOnItemListener);
+        return new FileViewerViewHolder(itemView);
     }
 
     @Override
@@ -39,40 +37,13 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Fi
         return mDataset.size();
     }
 
-    public class FileViewerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class FileViewerViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ImageView deleteImage;
-        OnItemListener onItemListener;
 
-        public FileViewerViewHolder(@NonNull View itemView, final OnItemListener onItemListener) {
+        public FileViewerViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.file_name_text);
-            deleteImage = itemView.findViewById(R.id.image_delete);
-            this.onItemListener = onItemListener;
-
-            itemView.setOnClickListener(this);
-
-            deleteImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        onItemListener.onDeleteClick(position);
-                    }
-                }
-            });
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            onItemListener.onItemClick(getAdapterPosition());
-        }
-
-    }
-
-    public interface OnItemListener {
-        void onItemClick(int position);
-        void onDeleteClick(int position);
+            deleteImage = itemView.findViewById(R.id.image_delete);}
     }
 }

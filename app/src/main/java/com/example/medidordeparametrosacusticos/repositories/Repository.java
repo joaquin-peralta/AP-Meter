@@ -1,11 +1,11 @@
-package com.example.medidordeparametrosacusticos.storage;
+package com.example.medidordeparametrosacusticos.repositories;
 
 import android.content.Context;
 
-import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 
-import com.example.medidordeparametrosacusticos.adapters.FileViewerAdapter;
-import com.example.medidordeparametrosacusticos.fragments.FileViewerFragment;
+import com.example.medidordeparametrosacusticos.models.AudioProcessor;
+import com.example.medidordeparametrosacusticos.models.AudioRecorder;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -20,16 +20,40 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
-public class StorageManager {
+public class Repository {
+    private static Repository instance;
     private WeakReference<Context> contextWeakReference;
     private ArrayList<String> mResults = new ArrayList<String>();
-    private ArrayList<String> mMeasuresList = new ArrayList<String>();
+    private ArrayList<String> mFileList = new ArrayList<String>();
 
-    public StorageManager(Context context) {
+    public Repository(Context context) {
         contextWeakReference = new WeakReference<Context>(context);
     }
 
-    public void loadCurrentMeasures() {
+    public static Repository getInstance(Context context) {
+        if (instance == null) {
+            instance = new Repository(context);
+        }
+        return instance;
+    }
+
+    public MutableLiveData<ArrayList<String>> getFileList() {
+        Context context = contextWeakReference.get();
+        String[] fileList = context.fileList();
+        mFileList.addAll(Arrays.asList(fileList));
+        MutableLiveData<ArrayList<String>> data = new MutableLiveData<>();
+        data.setValue(mFileList);
+        return data;
+    }
+
+    public MutableLiveData<ArrayList<String>> getResults() {
+        loadMeasures();
+        MutableLiveData<ArrayList<String>> data = new MutableLiveData<>();
+        data.setValue(mResults);
+        return data;
+    }
+
+    public void loadMeasures() {
         Context context = contextWeakReference.get();
         if (context == null) {
             return;
@@ -42,7 +66,6 @@ public class StorageManager {
             }
         }
     }
-
 
     private void loadFile(String fileName) {
         Context context = contextWeakReference.get();
@@ -102,7 +125,7 @@ public class StorageManager {
         try {
             fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             fos.write(text.getBytes());
-            mMeasuresList.add(fileName);
+            mFileList.add(fileName);
 
             // update internal storage
             loadFile(fileName);
@@ -124,18 +147,6 @@ public class StorageManager {
         }
         String fileName = context.fileList()[position];
         context.deleteFile(fileName);
-        mMeasuresList.remove(position);
+        mFileList.remove(position);
     }
-
-    public ArrayList<String> getResults() {
-        return mResults;
-    }
-
-    public ArrayList<String> getMeasuresList() {
-        Context context = contextWeakReference.get();
-        String[] fileList = context.fileList();
-        mMeasuresList.addAll(Arrays.asList(fileList));
-        return mMeasuresList;
-    }
-
 }

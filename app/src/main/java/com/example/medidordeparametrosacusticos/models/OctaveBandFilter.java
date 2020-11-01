@@ -1,4 +1,4 @@
-package com.example.medidordeparametrosacusticos;
+package com.example.medidordeparametrosacusticos.models;
 
 import uk.me.berndporr.iirj.Butterworth;
 

@@ -1,38 +1,26 @@
 package com.example.medidordeparametrosacusticos.activities;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.medidordeparametrosacusticos.R;
 import com.example.medidordeparametrosacusticos.adapters.MyTabAdapter;
 import com.example.medidordeparametrosacusticos.databinding.ActivityMainBinding;
-import com.example.medidordeparametrosacusticos.fragments.FileViewerFragment;
-import com.example.medidordeparametrosacusticos.storage.StorageManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-    private StorageManager mStorageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,17 +52,7 @@ public class MainActivity extends AppCompatActivity {
         }
         );
         tabLayoutMediator.attach();
-
-        mStorageManager = new StorageManager(getApplicationContext());
-        mStorageManager.loadCurrentMeasures();
         checkPermission();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.elements, menu);
-        return true;
     }
 
     private void checkPermission() {
@@ -83,5 +61,12 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.RECORD_AUDIO}, 1000);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.elements, menu);
+        return true;
     }
 }
