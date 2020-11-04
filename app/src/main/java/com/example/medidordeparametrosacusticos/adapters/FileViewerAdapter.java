@@ -14,17 +14,27 @@ import com.example.medidordeparametrosacusticos.R;
 import java.util.ArrayList;
 
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.FileViewerViewHolder> {
-    ArrayList<String> mDataset;
+    private ArrayList<String> mDataset;
+    private OnItemClickListener mListener;
 
-    public FileViewerAdapter(ArrayList<String> dataset) {
-        this.mDataset = dataset;
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+        void onDeleteClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+
+    public FileViewerAdapter(ArrayList<String> dataSet) {
+        this.mDataset = dataSet;
     }
 
     @NonNull
     @Override
     public FileViewerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_view, parent, false);
-        return new FileViewerViewHolder(itemView);
+        return new FileViewerViewHolder(itemView, mListener);
     }
 
     @Override
@@ -37,13 +47,38 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Fi
         return mDataset.size();
     }
 
-    public class FileViewerViewHolder extends RecyclerView.ViewHolder {
+    public static class FileViewerViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ImageView deleteImage;
 
-        public FileViewerViewHolder(@NonNull View itemView) {
+        public FileViewerViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             textView = itemView.findViewById(R.id.file_name_text);
-            deleteImage = itemView.findViewById(R.id.image_delete);}
+            deleteImage = itemView.findViewById(R.id.image_delete);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            deleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
+        }
     }
 }

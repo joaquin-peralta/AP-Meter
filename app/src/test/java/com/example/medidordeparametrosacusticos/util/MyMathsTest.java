@@ -125,4 +125,54 @@ public class MyMathsTest {
         MyMaths.polyfit(x, y);
 
     }
+    
+    @Test
+    public void asArrayOfListsTest() {
+        double[][] matrix = new double[][]{{1, 2, 3, 4},{1, 2, 3, 4},{1, 2, 3, 4},
+                {1, 2, 3, 4},{1, 2, 3, 4},{1, 2, 3, 4},
+                {1, 2, 3, 4},{1, 2, 3, 4},{1, 2, 3, 4}};
+        ArrayList<ArrayList<Double>> arrayLists = new ArrayList<ArrayList<Double>>();
+        ArrayList<Double> temp = new ArrayList<>();
+
+        for (int i = 0; i < matrix.length ; i++) {
+            for (int j = 0; j < matrix[i].length ; j++) {
+                temp.add(matrix[i][j]);
+            }
+            ArrayList<Double> cloned = (ArrayList<Double>) temp.clone();
+            arrayLists.add(cloned);
+            temp.clear();
+        }
+
+        for (int i = 0; i < arrayLists.size() ; i++) {
+            for (int j = 0; j < arrayLists.get(i).size(); j++) {
+                System.out.print(arrayLists.get(i).get(j) + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    @Test
+    public void saveDataTest() {
+        ArrayList<ArrayList<Double>> reverbTimes = new ArrayList<ArrayList<Double>>();
+        ArrayList<Double> temp = new ArrayList<>();
+        for (int i = 1; i < 5; i++) {
+            temp.add((double) i);
+        }
+        for (int i = 1; i < 10 ; i++) {
+            reverbTimes.add(temp);
+        }
+        double[][] data = new double[reverbTimes.size()][reverbTimes.get(0).size()];
+        for (int i = 0; i < reverbTimes.size() ; i++) {
+            for (int j = 0; j < reverbTimes.get(i).size() ; j++) {
+                data[i][j] = reverbTimes.get(i).get(j);
+            }
+        }
+
+        for (int i = 0; i < data.length ; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                System.out.print(data[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
 }

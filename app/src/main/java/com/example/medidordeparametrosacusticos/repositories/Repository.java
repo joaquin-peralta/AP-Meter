@@ -4,9 +4,6 @@ import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.medidordeparametrosacusticos.models.AudioProcessor;
-import com.example.medidordeparametrosacusticos.models.AudioRecorder;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,7 +23,7 @@ public class Repository {
     private ArrayList<String> mResults = new ArrayList<String>();
     private ArrayList<String> mFileList = new ArrayList<String>();
 
-    public Repository(Context context) {
+    private Repository(Context context) {
         contextWeakReference = new WeakReference<Context>(context);
     }
 

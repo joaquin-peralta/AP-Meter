@@ -12,6 +12,7 @@ import com.example.medidordeparametrosacusticos.util.MyMaths;
 import java.util.ArrayList;
 
 public class AudioRecorder {
+    private static AudioRecorder instance;
     private AudioRecord recorder = null;
     private int SAMPLE_RATE = 44100;
     private int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
@@ -24,9 +25,20 @@ public class AudioRecorder {
     private boolean isLoudEnough = false;
     private boolean isChecked = false;
     private double noiseFloor = 10.0;
+    private MutableLiveData<Boolean> mutableState = new MutableLiveData<>();
+    MutableLiveData<ArrayList<Short>> mutableAudioData = new MutableLiveData<>();
 
     private ArrayList<Short> audioDataList = new ArrayList<Short>();
-    private double[] mAudioData;
+
+    private AudioRecorder() {
+    }
+
+    public static AudioRecorder getInstance() {
+        if (instance == null) {
+            instance = new AudioRecorder();
+        }
+        return instance;
+    }
 
     public void startRecording() {
         bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
@@ -39,6 +51,7 @@ public class AudioRecorder {
                 recorder.startRecording();
                 int bytesCounter = 0;
                 short[] audioData = new short[bufferSize/2];
+                ArrayList<Short> tempAudioData = new ArrayList<>();
                 isRecording = true;
 
                 while (isRecording) {
@@ -49,23 +62,25 @@ public class AudioRecorder {
                         if (isLoudEnough) {
                             bytesCounter += readSize;
                             for (int i = 0; i < audioData.length; i++) {
-                                audioDataList.add(audioData[i]);
+                                tempAudioData.add(audioData[i]);
                             }
                             if (bytesCounter > 141000) { // duración del proceso: 3 segundos ~
                                 recorder.stop();
                                 recorder.release();
                                 recorder = null;
                                 isRecording = false;
-                                setAudioData();
-                                new AudioProcessor().process(mAudioData);
+                                isLoudEnough = false;
+                                audioDataList.addAll(tempAudioData);
+                                mutableState.postValue(false);
+                                mutableAudioData.postValue(audioDataList);
                             }
                         }
-                    } else if (readSize > 564000) {
+                    /*} else if (readSize > 564000) {
                         recorder.stop();
                         recorder.release();
                         recorder = null;
                         isRecording = false;
-                        mAudioData = null;
+                        audioDataList.clear();*/
 
                     } else if (readSize == AudioRecord.ERROR_INVALID_OPERATION) {
                         Log.e("Recording", "Invalid operation error");
@@ -98,6 +113,7 @@ public class AudioRecorder {
             recorder.stop();
             recorder.release();
             recorder = null;
+            audioDataList.clear();
         }
     }
 
@@ -111,19 +127,15 @@ public class AudioRecorder {
         if (rms > noiseFloor) {
             isLoudEnough = true;
             isChecked = true;
+            mutableState.postValue(true);
         }
     }
 
-    private void setAudioData() {
-        mAudioData = new double[audioDataList.size()];
-        for (int i = 0; i < audioDataList.size(); i++) {
-            mAudioData[i] = audioDataList.get(i);
-        }
+    public MutableLiveData<Boolean> getIsRecording() {
+        return mutableState;
     }
 
-    public MutableLiveData<Boolean> getStatus() {
-        MutableLiveData<Boolean> data = new MutableLiveData<>();
-        data.postValue(isLoudEnough);
-        return data;
+    public MutableLiveData<ArrayList<Short>> getAudioData() {
+        return mutableAudioData;
     }
 }

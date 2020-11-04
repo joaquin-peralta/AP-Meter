@@ -1,9 +1,9 @@
 package com.example.medidordeparametrosacusticos.util;
 
-import java.util.ArrayList;
-import org.apache.commons.math3.*;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
+
+import java.util.ArrayList;
 
 import static com.example.medidordeparametrosacusticos.util.MyTools.reverse;
 
@@ -55,48 +55,65 @@ public class MyMaths {
         ArrayList<Double> levelList = new ArrayList<Double>();
         ArrayList<Double> sampleList = new ArrayList<Double>();
 
-        if (range == "EDT") {
-            if (max - min <= 10.0) {return null;}
-            double startPoint = max;
-            double endPoint = max - 10.0;
-            for (int i = 0; i < normalizeCurve.length; i++) {
-                if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
-                    levelList.add(normalizeCurve[i]);
-                    sampleList.add((double) i);
+        switch (range) {
+            case "EDT": {
+                if (max - min <= 10.0) {
+                    return null;
                 }
-            }
+                double startPoint = max;
+                double endPoint = max - 10.0;
+                for (int i = 0; i < normalizeCurve.length; i++) {
+                    if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
+                        levelList.add(normalizeCurve[i]);
+                        sampleList.add((double) i);
+                    }
+                }
 
-        } else if (range == "10dB") {
-            if (max - min <= 15.0) {return null;}
-            double startPoint = max - 5.0;
-            double endPoint = max - 15.0;
-            for (int i = 0; i < normalizeCurve.length; i++) {
-                if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
-                    levelList.add(normalizeCurve[i]);
-                    sampleList.add((double) i);
-                }
+                break;
             }
-
-        } else if (range == "20dB") {
-            if (max - min <= 25.0) {return null;}
-            double startPoint = max - 5.0;
-            double endPoint = max - 25.0;
-            for (int i = 0; i < normalizeCurve.length; i++) {
-                if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
-                    levelList.add(normalizeCurve[i]);
-                    sampleList.add((double) i);
+            case "10dB": {
+                if (max - min <= 15.0) {
+                    return null;
                 }
+                double startPoint = max - 5.0;
+                double endPoint = max - 15.0;
+                for (int i = 0; i < normalizeCurve.length; i++) {
+                    if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
+                        levelList.add(normalizeCurve[i]);
+                        sampleList.add((double) i);
+                    }
+                }
+
+                break;
             }
-
-        } else if (range == "30dB") {
-            if (max - min <= 35.0) {return null;}
-            double startPoint = max - 5.0;
-            double endPoint = max - 35.0;
-            for (int i = 0; i < normalizeCurve.length; i++) {
-                if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
-                    levelList.add(normalizeCurve[i]);
-                    sampleList.add((double) i);
+            case "20dB": {
+                if (max - min <= 25.0) {
+                    return null;
                 }
+                double startPoint = max - 5.0;
+                double endPoint = max - 25.0;
+                for (int i = 0; i < normalizeCurve.length; i++) {
+                    if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
+                        levelList.add(normalizeCurve[i]);
+                        sampleList.add((double) i);
+                    }
+                }
+
+                break;
+            }
+            case "30dB": {
+                if (max - min <= 35.0) {
+                    return null;
+                }
+                double startPoint = max - 5.0;
+                double endPoint = max - 35.0;
+                for (int i = 0; i < normalizeCurve.length; i++) {
+                    if (normalizeCurve[i] <= startPoint && normalizeCurve[i] >= endPoint) {
+                        levelList.add(normalizeCurve[i]);
+                        sampleList.add((double) i);
+                    }
+                }
+                break;
             }
         }
 

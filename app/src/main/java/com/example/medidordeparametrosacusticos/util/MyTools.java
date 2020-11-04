@@ -1,5 +1,7 @@
 package com.example.medidordeparametrosacusticos.util;
 
+import java.util.ArrayList;
+
 public class MyTools {
 
     public static void reverse(double[] array) {
@@ -28,5 +30,20 @@ public class MyTools {
             }
         }
         return min;
+    }
+
+    public static ArrayList<ArrayList<Double>> asListOfArrays(double[][] matrix) {
+        ArrayList<ArrayList<Double>> arrayLists = new ArrayList<ArrayList<Double>>();
+        ArrayList<Double> temp = new ArrayList<>();
+
+        for (int i = 0; i < matrix.length ; i++) {
+            for (int j = 0; j < matrix[i].length ; j++) {
+                temp.add(matrix[i][j]);
+            }
+            ArrayList<Double> cloned = (ArrayList<Double>) temp.clone();
+            arrayLists.add(cloned);
+            temp.clear();
+        }
+        return arrayLists;
     }
 }
